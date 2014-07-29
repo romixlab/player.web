@@ -1,0 +1,17 @@
+/* upload form styles */
+.uk-form-file input[type=file] {
+	opacity: 0;
+	cursor: pointer;
+}
+
+.uk-placeholder {
+	margin-bottom: 15px;
+	padding: 20px;
+	border: 1px dashed #ddd;
+	background: #fafafa;
+	color: #444;
+}
+
+.main-panel {
+	padding-top: 15px;
+}
