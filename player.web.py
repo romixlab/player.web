@@ -116,6 +116,9 @@ class StringGenerator(object):
 			os.link(theFile.file.name, './music/' + theFile.filename)
 
 if __name__ == '__main__':
+	musicdir = os.getcwd() + '/music'
+	if not os.path.exists(musicdir):
+	    os.makedirs(musicdir)
 	conf = {
 		'/': {
 			'tools.sessions.on': True,
