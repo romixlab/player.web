@@ -1,192 +1,75 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>player.web</title>
-	<link rel="stylesheet" href="/static/css/uikit.gradient.min.css" />
-	<link rel="stylesheet" href="/static/css/addons/uikit.gradient.addons.min.css" />
-	<link rel="stylesheet" href="/static/css/style.css" />
-	<script src="/static/js/jquery-1.11.1.min.js"></script>
-	<script src="/static/js/uikit.min.js"></script>
-	<script src="/static/js/addons/upload.min.js"></script>
-	<script src="/static/js/addons/sticky.min.js"></script>
-	<script type="text/javascript">
-		function update_table(items) {
-			$('#table tbody tr').remove();
-			$.each(items, function(index, item) {
-				$("#table tbody").append('<tr><td class="uk-width-9-10">' + item +
-					'</td><td class="uk-width-1-10"><button class="delete-button uk-button uk-button-mini uk-button-primary uk-icon-minus-circle"></button></td></tr>')
-			});
-
-			$(".delete-button").click(function(e) {
-				$(this).parent().parent().fadeTo(400, 0, function() {
-					$(this).remove();
-				});
-				$.post("/rm", {file: $(this).parent().parent().children().text()})
-				.fail(function() {
-					alert("can't remove")
-				});
-				e.preventDefault();
-			});
-		}
-
-		function playing_state() {
-			$('#prev-button').prop('disabled', false)
-			$('#play-button').prop('disabled', true)
-			$('#stop-button').prop('disabled', false)
-			$('#next-button').prop('disabled', false)
-			$('#volup-button').prop('disabled', false)
-			$('#voldown-button').prop('disabled', false)
-			$('.delete-button').prop('disabled', true)
-			$('#remove-all-button').prop('disabled', true)
-		}
-
-		function stopped_state() {
-			$('#prev-button').prop('disabled', true)
-			$('#play-button').prop('disabled', false)
-			$('#stop-button').prop('disabled', true)
-			$('#next-button').prop('disabled', true)
-			$('#volup-button').prop('disabled', true)
-			$('#voldown-button').prop('disabled', true)
-			$('.delete-button').prop('disabled', false)
-			$('#remove-all-button').prop('disabled', false)
-		}
-
-		function get_state() {
-			$.get('/state', function(data) {
-				if (data == 'playing')
-					playing_state()
-				else if (data == 'stopped')
-					stopped_state()
-			});
-		}
-
-		$(document).ready(function() {
-			$("#play-button").click(function(e) {
-				$.get("/play", function(data) {
-					if (data == 'playing')
-						playing_state()
-				});
-				get_state();
-				e.preventDefault();
-			});
-
-			$("#stop-button").click(function(e) {
-				$.post("/stop");
-				get_state();
-				e.preventDefault();
-			});
-
-			$("#prev-button").click(function(e) {
-				$.post("/prev");
-				e.preventDefault();
-			});
-
-			$("#next-button").click(function(e) {
-				$.post("/next");
-				e.preventDefault();
-			});
-
-			$("#volup-button").click(function(e) {
-				$.post("/volup");
-				e.preventDefault();
-			});
-
-			$("#voldown-button").click(function(e) {
-				$.post("/voldown");
-				e.preventDefault();
-			});
-
-			$("#remove-all-button").click(function(e) {
-				if (confirm("Удалить все файлы?")) {
-					$.post("/rmall", function() {
-						$.get("/ls", function(data) {
-							update_table(data)
-						});
-					});
-				}
-				e.preventDefault();
-			});
-
-			$.get("/ls", function(data) {
-				update_table(data)
-			});
-
-			get_state();
-		});
-	</script>
+    <title>player.web</title>
+    <link rel="stylesheet" href="/static/css/uikit.gradient.min.css" />
+    <link rel="stylesheet" href="/static/css/addons/uikit.gradient.addons.min.css" />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <script src="/static/js/jquery-1.11.1.min.js"></script>
+    <script src="/static/js/uikit.min.js"></script>
+    <script src="/static/js/addons/upload.min.js"></script>
+    <script src="/static/js/addons/sticky.min.js"></script>
+    <script src="/static/js/logic.js"></script>
+    <script src="/static/js/recorder.js"></script>
 </head>
+
 <body>
-	<nav class="uk-navbar uk-navbar-attached" style="">
-		<div class="uk-container uk-container-center" >
-			<img  src="/static/images/logo.svg" width="170">
+    <nav class="uk-navbar uk-navbar-attached" style="">
+        <div class="uk-container uk-container-center">
+            <img src="/static/images/logo.svg" width="170">
 
-			<div class="uk-button-group">
-				<button id="prev-button" class="uk-button uk-icon-fast-backward"></button>
-				<button id="play-button" class="uk-button uk-icon-play"></button>
-				<button id="stop-button" class="uk-button uk-icon-stop"></button>
-				<button id="next-button" class="uk-button uk-icon-fast-forward"></button>
-			</div>
+            <div class="uk-button-group">
+                <button id="prev-button" class="uk-button uk-icon-fast-backward"></button>
+                <button id="play-button" class="uk-button uk-icon-play" title="Play all the files infinitely"></button>
+                <button id="schedule-button" class="uk-button uk-icon-clock-o" title="Play all the files infinitely by schedule"></button>
+                <button id="stop-button" class="uk-button uk-icon-stop"></button>
+                <button id="next-button" class="uk-button uk-icon-fast-forward"></button>
+            </div>
 
-			<div class="uk-button-group">
-				<button id="voldown-button" class="uk-button uk-icon-angle-down"></button>
-				<button id="volup-button" class="uk-button uk-icon-angle-up"></button>
-			</div>
-		</div>
-	</nav>
-	<div class="tm-middle main-panel">
-		<div class="uk-container uk-container-center">
+            <div class="uk-button-group">
+                <button id="voldown-button" class="uk-button uk-icon-angle-down"></button>
+                <button id="volup-button" class="uk-button uk-icon-angle-up"></button>
+            </div>
 
-			<table id="table" class="uk-table uk-table-striped">
-				<thead><tr><td class="uk-width-9-10">Файлы</td><td class="uk-width-1-10">
-					<button id="remove-all-button" class="uk-button uk-button-mini uk-button-danger uk-icon-minus-circle"></button>
-				</td></tr></thead>
-				<tbody>
-				</tbody>
-			</table>
+            <div class="uk-button-group">
+                <button id="rec-button" class="uk-button uk-icon-circle" title="Record from microphone"></button>
+                <button id="rec-stop-button" enabled="false" class="uk-button uk-icon-stop" title="Stop recording" disabled></button>
+                <button id="rec-play-button" class="uk-button uk-icon-play" title="Play recorded audio" disabled></button>
+                <button id="broadcast-button" class="uk-button uk-icon-upload" title="Upload and broadcast" disabled></button>
+            </div>
+        </div>
+    </nav>
+    <div class="tm-middle main-panel">
+        <div class="uk-container uk-container-center">
+            <div id="audio-warning" style="display: none;" class="uk-alert uk-alert-warning">Your browser doesn't support audio recording!</div>
+            <audio id="audio-player" style="display: none;" controls>
+                <div class="uk-alert uk-alert-warning">Your browser doesn't support audio tag!</div>
+            </audio>
 
-			<div id="upload-drop" class="uk-placeholder uk-text-center">
-				<i class="uk-icon-cloud-upload uk-icon-medium uk-text-muted uk-margin-small-right"></i>
-				Upload new files by dropping them here or <a class="uk-form-file">selecting some<input id="upload-select" type="file" style="opacity: 0%;" multiple></a>.
-			</div>
+            <table id="table" class="uk-table uk-table-striped">
+                <thead>
+                    <tr>
+                        <td class="uk-width-9-10">Files</td>
+                        <td class="uk-width-1-10">
+                            <button id="remove-all-button" class="uk-button uk-button-mini uk-button-danger uk-icon-minus-circle" title="Remove all"></button>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
 
-			<div id="progressbar" class="uk-progress uk-hidden">
-				<div class="uk-progress-bar" style="width: 0%;">0%</div>
-			</div>
-			<script>
-				$(function() {
-					var progressbar = $("#progressbar"),
-					bar         = progressbar.find('.uk-progress-bar'),
-					settings    = {	action: 'upload', // upload url
-                                    param: 'theFiles',
-                                    allow: "*",
-                                    //allow : '*.(mp3|wma|wav|midi|mid)',
-                                    loadstart: function() {
-                                    	bar.css("width", "0%").text("0%");
-                                    	progressbar.removeClass("uk-hidden");
-                                    },
+            <div id="upload-drop" class="uk-placeholder uk-text-center">
+                <i class="uk-icon-cloud-upload uk-icon-medium uk-text-muted uk-margin-small-right"></i>
+                Upload new files by dropping them here or <a class="uk-form-file">selecting some<input id="upload-select" type="file" style="opacity: 0%;" multiple></a>.
+            </div>
 
-                                    progress: function(percent) {
-                                    	percent = Math.ceil(percent);
-                                    	bar.css("width", percent+"%").text(percent+"%");
-                                    },
-
-                                    allcomplete: function(response) {
-                                    	bar.css("width", "100%").text("100%");
-
-                                    	setTimeout(function(){
-                                    		progressbar.addClass("uk-hidden");
-                                    	}, 250);
-
-                                    	$.get("/ls", function(data) {
-                                    		update_table(data)
-                                    	});
-                                        }
-                                    };
-                                    var select = $.UIkit.uploadSelect($("#upload-select"), settings),
-                                    drop   = $.UIkit.uploadDrop($("#upload-drop"), settings);
-                                });
-			</script>
-		</div>
-	</div>
+            <div id="progressbar" class="uk-progress uk-hidden">
+                <div class="uk-progress-bar" style="width: 0%;">0%</div>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>
