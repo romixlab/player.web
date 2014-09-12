@@ -13,3 +13,7 @@ Install schedule
 And run it!  
 `python player.web.py`  
 Then go to ip:9090. You can change interface binding and port in server.conf file. There is simple authentication, change users and passwords in users.json file.
+Screenshots
+-----------
+![player.web](https://cloud.githubusercontent.com/assets/6066470/4253287/20837ffa-3a9e-11e4-8b1c-d550c702adf0.jpg)
+
