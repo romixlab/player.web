@@ -166,7 +166,7 @@ $(document).ready(function() {
     get_state();
 });
 
-$(function() {
+$(document).ready(function() {
     var progressbar = $("#progressbar"),
         bar = progressbar.find('.uk-progress-bar'),
         settings = {
@@ -216,7 +216,6 @@ function disable_rec() {
 }
 
 $(document).ready(function() {
-    alert('1')
     try {
         // webkit shim
         window.AudioContext = window.AudioContext || window.webkitAudioContext;

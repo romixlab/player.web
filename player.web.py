@@ -177,7 +177,7 @@ if __name__ == '__main__':
 		'/': {
 			'tools.sessions.on': True,
 			'tools.staticdir.root': os.path.abspath(os.getcwd()),
-			'tools.auth_basic.on': False,
+			'tools.auth_basic.on': True,
 			'tools.auth_basic.realm': 'localhost',
 			'tools.auth_basic.checkpassword': validate_password
 		},
